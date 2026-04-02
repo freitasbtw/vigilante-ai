@@ -1,88 +1,92 @@
-# Vigilante.AI 🛡️
+# Vigilante.AI
 
-Vigilante.AI is a real-time safety monitoring system powered by Computer Vision. It automatically detects Personal Protective Equipment (PPE) to ensure workplace safety and compliance.
+Vigilante.AI is a real-time workplace safety monitoring system powered by computer vision.
+It detects PPE usage from camera frames and surfaces violations in a live dashboard.
 
-## ✨ Features
+## Stack
 
-- **Real-time PPE Detection**: Detects helmets, safety glasses, and other essential gear using YOLOv8.
-- **Smart Violation Logic**: Integrated face detection (Haar Cascades) acts as a presence proxy to accurately flag missing equipment even when no gear is detected.
-- **Performance Optimized**: Low-latency processing (640x480 resolution / 512px input) designed for CPU inference.
-- **Interactive Dashboard**: Modern Next.js interface with real-time statistics, violation charts, and detailed alert history.
-- **Stability Focused**: Reliable frame-based streaming refresh to prevent browser-side video hangs.
+- Backend: Python 3.11+, FastAPI, OpenCV, Ultralytics YOLOv8
+- Frontend: Next.js 14, React 18, Tailwind CSS
+- Deployment: Docker Compose
 
-## 🏗️ Architecture
+## PPE classes
 
-- **Backend**: Python 3.11+, FastAPI, OpenCV, YOLOv8 (Ultralytics).
-- **Frontend**: Next.js 14 (App Router), Tailwind CSS, Radix UI, Recharts.
-- **Deployment**: Docker and Docker Compose support.
+Current model contract uses 6 PPE classes:
 
-## 🚀 Getting Started
+- `luvas`
+- `colete`
+- `protecao_ocular`
+- `capacete`
+- `mascara`
+- `calcado_seguranca`
 
-### Prerequisites
-
-- **Python 3.11+**
-- **Node.js 18+**
-- **Webcam** (USB or Integrated)
-
-### 🐋 Running with Docker
-
-The easiest way to get started is using Docker Compose:
+## Quick start (Docker)
 
 ```bash
 docker compose up --build
 ```
 
-- **Frontend**: [http://localhost:3000](http://localhost:3000)
-- **Backend API**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- Frontend: http://localhost:3000
+- Backend docs: http://localhost:8000/docs
 
-> **Note**: To use your webcam inside a container on Linux, ensure the `devices` section in `docker-compose.yml` is uncommented.
+## Local development
 
-### 🛠️ Manual Setup
+### Backend
 
-#### Backend
 ```bash
 cd backend
 python -m venv .venv
-# Windows:
+# Windows
 .venv\Scripts\activate
-# Linux/macOS:
+# Linux/macOS
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 python -m app.main
 ```
 
-#### Frontend
+### Frontend
+
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
-## ⚙️ Configuration
+## Validation checks
 
-Environment variables (prefix `VIGILANTE_`):
+Run these before opening a PR:
 
-| Variable | Default | Description |
-|---|---|---|
-| `VIGILANTE_CAMERA_INDEX` | `0` | System camera index. |
-| `VIGILANTE_MODEL_PATH` | `best.pt` | Path to the trained YOLOv8 model. |
-| `VIGILANTE_CONFIDENCE_THRESHOLD` | `0.5` | Minimum confidence for detections. |
-| `VIGILANTE_CAMERA_WIDTH` | `640` | Capture width. |
-| `VIGILANTE_CAMERA_HEIGHT` | `480` | Capture height. |
+```bash
+# backend
+cd backend
+python -m pytest -q
 
-## 📡 API Overview
+# frontend
+cd frontend
+npm run lint
+npm run build
+```
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/status` | Current system state (FPS, Model, Camera). |
-| `GET` | `/api/stream/frame` | Single frame JPEG endpoint for the frontend UI. |
-| `GET` | `/api/alerts` | List of the last 50 safety violations. |
-| `GET` | `/api/stats` | Session aggregate statistics. |
+## Environment variables
 
-## 📊 Pages
+All backend vars use `VIGILANTE_` prefix.
 
-- **Home (`/`)**: Real-time monitoring feed and active alerts.
-- **Dashboard (`/dashboard`)**: Analytics, performance metrics, and historical trends.
+- `VIGILANTE_CAMERA_INDEX` (default: `0`)
+- `VIGILANTE_MODEL_PATH` (default: `best.pt`)
+- `VIGILANTE_CONFIDENCE_THRESHOLD` (default: `0.15`)
+- `VIGILANTE_MODEL_INPUT_SIZE` (default: `512`)
+- `VIGILANTE_CAMERA_WIDTH` (default: `640`)
+- `VIGILANTE_CAMERA_HEIGHT` (default: `480`)
+- `VIGILANTE_ALERT_COOLDOWN_SECONDS` (default: `10`)
 
----
-*Built for safety. Engineered for performance.*
+## API overview
+
+- `GET /api/status`: camera/model/fps/uptime status
+- `GET /api/stream/frame`: latest JPEG frame
+- `POST /api/stream/start`: start processing
+- `POST /api/stream/stop`: stop processing
+- `GET /api/alerts`: latest alerts (max 50)
+- `DELETE /api/alerts`: clear alerts
+- `GET /api/stats`: session stats
+- `GET /api/config/epis`: list EPI toggles
+- `POST /api/config/epis`: update active EPIs
