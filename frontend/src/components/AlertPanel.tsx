@@ -1,70 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState } from "react";
 import { Bell, BellOff, Trash2 } from "lucide-react";
 import type { Alert } from "@/types";
-import { getAlerts, clearAlerts } from "@/lib/api";
+import { useAlerts } from "@/hooks/useAlerts";
 import AlertCard from "./AlertCard";
 import AlertDetailsModal from "./AlertDetailsModal";
 
 export default function AlertPanel() {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
-  const prevCountRef = useRef(0);
-  const audioContextRef = useRef<AudioContext | null>(null);
-
-  const playNotification = useCallback(() => {
-    const AudioContextCtor = window.AudioContext || (window as typeof window & {
-      webkitAudioContext?: typeof AudioContext;
-    }).webkitAudioContext;
-
-    if (!AudioContextCtor) return;
-
-    const ctx = audioContextRef.current ?? new AudioContextCtor();
-    audioContextRef.current = ctx;
-
-    const oscillator = ctx.createOscillator();
-    const gain = ctx.createGain();
-    oscillator.connect(gain);
-    gain.connect(ctx.destination);
-    oscillator.frequency.value = 880;
-    gain.gain.value = 0.15;
-    oscillator.start();
-    oscillator.stop(ctx.currentTime + 0.12);
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-
-    async function poll() {
-      try {
-        const data = await getAlerts();
-        if (!active) return;
-        setAlerts(data);
-
-        if (soundEnabled && data.length > prevCountRef.current) {
-          playNotification();
-        }
-        prevCountRef.current = data.length;
-      } catch {
-        // ignore fetch errors
-      }
-    }
-
-    poll();
-    const interval = setInterval(poll, 2000);
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
-  }, [soundEnabled, playNotification]);
+  const { alerts, clearAllAlerts } = useAlerts(soundEnabled);
 
   async function handleClear() {
-    await clearAlerts();
-    setAlerts([]);
+    await clearAllAlerts();
     setSelectedAlert(null);
-    prevCountRef.current = 0;
   }
 
   return (
@@ -73,7 +23,7 @@ export default function AlertPanel() {
         <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-4">
           <div className="flex items-center gap-3">
             <div>
-              <p className="eyebrow">Ocorrências</p>
+              <p className="eyebrow">Ocorrencias</p>
               <h3 className="mt-1 text-base font-semibold text-[var(--foreground)]">Alertas recentes</h3>
             </div>
           </div>
@@ -106,7 +56,7 @@ export default function AlertPanel() {
             <div className="flex h-full min-h-64 flex-col items-center justify-center rounded-[22px] border border-dashed border-[var(--border)] bg-[var(--panel)] px-6 text-center">
               <p className="text-sm font-medium text-[var(--foreground)]">Nenhum alerta registrado.</p>
               <p className="mt-2 max-w-xs text-sm text-[var(--muted)]">
-                Quando houver ausência de EPI, os eventos mais recentes aparecem aqui com atalho para inspeção detalhada.
+                Quando houver ausencia de EPI, os eventos mais recentes aparecem aqui com atalho para inspecao detalhada.
               </p>
             </div>
           ) : (
