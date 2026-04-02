@@ -1,6 +1,6 @@
 from typing import Any, cast
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 
@@ -18,6 +18,7 @@ from app.schemas import (
     StatsResponse,
     ViolationTimelineEntry,
 )
+from app.security import enforce_rate_limit, require_api_key
 from app.stream import StreamProcessor
 
 app = FastAPI(title="Vigilante.AI", version="0.1.0")
@@ -34,6 +35,10 @@ camera = CameraManager()
 detector = SafetyDetector()
 alert_manager = AlertManager()
 stream_processor = StreamProcessor(camera, detector, alert_manager)
+_PROTECTED_ENDPOINT_DEPENDENCIES = [
+    Depends(require_api_key),
+    Depends(enforce_rate_limit),
+]
 
 
 @app.get("/api/status")
@@ -69,7 +74,7 @@ def get_stream_frame() -> Response:
     )
 
 
-@app.post("/api/stream/start")
+@app.post("/api/stream/start", dependencies=_PROTECTED_ENDPOINT_DEPENDENCIES)
 def start_stream() -> dict[str, str | bool]:
     try:
         stream_processor.start()
@@ -78,7 +83,7 @@ def start_stream() -> dict[str, str | bool]:
     return {"started": True}
 
 
-@app.post("/api/stream/stop")
+@app.post("/api/stream/stop", dependencies=_PROTECTED_ENDPOINT_DEPENDENCIES)
 def stop_stream() -> dict[str, bool]:
     stream_processor.stop()
     return {"stopped": True}
@@ -131,7 +136,11 @@ def get_stats_endpoint() -> StatsResponse:
 _VALID_EPI_KEYS = set(EPI_CLASSES.values())
 
 
-@app.get("/api/config/epis", response_model=EPIConfigResponse)
+@app.get(
+    "/api/config/epis",
+    response_model=EPIConfigResponse,
+    dependencies=_PROTECTED_ENDPOINT_DEPENDENCIES,
+)
 def get_epi_config() -> EPIConfigResponse:
     active = stream_processor.active_epis
     epis = [
@@ -141,7 +150,11 @@ def get_epi_config() -> EPIConfigResponse:
     return EPIConfigResponse(epis=epis)
 
 
-@app.post("/api/config/epis", response_model=EPIConfigResponse)
+@app.post(
+    "/api/config/epis",
+    response_model=EPIConfigResponse,
+    dependencies=_PROTECTED_ENDPOINT_DEPENDENCIES,
+)
 def post_epi_config(request: EPIConfigRequest) -> EPIConfigResponse:
     invalid = set(request.active_epis) - _VALID_EPI_KEYS
     if invalid:

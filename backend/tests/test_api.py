@@ -1,17 +1,35 @@
-"""Tests for EPI config API endpoints (CONF-01).
-
-Covers: GET/POST /api/config/epis endpoints.
-"""
+"""Tests for EPI config API endpoints and protected-route security."""
 
 from __future__ import annotations
 
 import pytest
 from fastapi.testclient import TestClient
 
+from app.config import settings
+from app.security import rate_limiter
+
+
+@pytest.fixture(autouse=True)
+def reset_security_state() -> None:
+    original_api_key = settings.API_KEY
+    original_window = settings.RATE_LIMIT_WINDOW_SECONDS
+    original_max = settings.RATE_LIMIT_MAX_REQUESTS
+
+    settings.API_KEY = ""
+    settings.RATE_LIMIT_WINDOW_SECONDS = 60
+    settings.RATE_LIMIT_MAX_REQUESTS = 30
+    rate_limiter.clear()
+    try:
+        yield
+    finally:
+        settings.API_KEY = original_api_key
+        settings.RATE_LIMIT_WINDOW_SECONDS = original_window
+        settings.RATE_LIMIT_MAX_REQUESTS = original_max
+        rate_limiter.clear()
+
 
 @pytest.fixture()
 def client() -> TestClient:
-    """FastAPI TestClient using real app with real stream_processor (no camera/model needed for config)."""
     from app.main import app
 
     with TestClient(app) as c:
@@ -19,10 +37,7 @@ def client() -> TestClient:
 
 
 class TestEpiConfigEndpoints:
-    """CONF-01: GET/POST /api/config/epis endpoints."""
-
     def test_get_epi_config(self, client: TestClient) -> None:
-        """GET /api/config/epis returns 6 items, all inactive by default."""
         resp = client.get("/api/config/epis")
         assert resp.status_code == 200
 
@@ -30,23 +45,27 @@ class TestEpiConfigEndpoints:
         assert "epis" in data
         assert len(data["epis"]) == 6
 
-        # All should be inactive by default
         for item in data["epis"]:
             assert item["active"] is False
             assert "key" in item
             assert "label" in item
 
     def test_get_epi_config_keys(self, client: TestClient) -> None:
-        """GET /api/config/epis returns all 6 expected EPI keys."""
         resp = client.get("/api/config/epis")
         data = resp.json()
 
         keys = {item["key"] for item in data["epis"]}
-        expected = {"luvas", "colete", "protecao_ocular", "capacete", "mascara", "calcado_seguranca"}
+        expected = {
+            "luvas",
+            "colete",
+            "protecao_ocular",
+            "capacete",
+            "mascara",
+            "calcado_seguranca",
+        }
         assert keys == expected
 
     def test_post_epi_config(self, client: TestClient) -> None:
-        """POST /api/config/epis updates which EPIs are active."""
         resp = client.post(
             "/api/config/epis",
             json={"active_epis": ["capacete", "luvas"]},
@@ -58,13 +77,43 @@ class TestEpiConfigEndpoints:
         active_keys = {item["key"] for item in active_items}
         assert active_keys == {"capacete", "luvas"}
 
-        # Reset for other tests
         client.post("/api/config/epis", json={"active_epis": []})
 
     def test_post_epi_config_invalid_key(self, client: TestClient) -> None:
-        """POST with invalid EPI key returns 400."""
         resp = client.post(
             "/api/config/epis",
             json={"active_epis": ["invalid_epi"]},
         )
         assert resp.status_code == 400
+
+
+class TestProtectedRouteSecurity:
+    def test_requires_api_key_when_configured(self, client: TestClient) -> None:
+        settings.API_KEY = "secret-key"
+
+        resp = client.get("/api/config/epis")
+
+        assert resp.status_code == 401
+        assert resp.json()["detail"] == "Invalid API key"
+
+    def test_accepts_valid_api_key(self, client: TestClient) -> None:
+        settings.API_KEY = "secret-key"
+
+        resp = client.get("/api/config/epis", headers={"X-API-Key": "secret-key"})
+
+        assert resp.status_code == 200
+
+    def test_rate_limit_returns_429(self, client: TestClient) -> None:
+        settings.API_KEY = "secret-key"
+        settings.RATE_LIMIT_MAX_REQUESTS = 1
+        settings.RATE_LIMIT_WINDOW_SECONDS = 60
+        rate_limiter.clear()
+
+        headers = {"X-API-Key": "secret-key"}
+
+        first = client.post("/api/stream/stop", headers=headers)
+        second = client.post("/api/stream/stop", headers=headers)
+
+        assert first.status_code == 200
+        assert second.status_code == 429
+        assert second.json()["detail"] == "Rate limit exceeded. Try again later."

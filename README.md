@@ -78,6 +78,13 @@ All backend vars use `VIGILANTE_` prefix.
 - `VIGILANTE_CAMERA_WIDTH` (default: `640`)
 - `VIGILANTE_CAMERA_HEIGHT` (default: `480`)
 - `VIGILANTE_ALERT_COOLDOWN_SECONDS` (default: `10`)
+- `VIGILANTE_API_KEY` (default: empty, disables API key check)
+- `VIGILANTE_RATE_LIMIT_WINDOW_SECONDS` (default: `60`)
+- `VIGILANTE_RATE_LIMIT_MAX_REQUESTS` (default: `30`)
+
+Frontend (optional):
+
+- `NEXT_PUBLIC_API_KEY` (must match `VIGILANTE_API_KEY` when backend auth is enabled)
 
 ## API overview
 

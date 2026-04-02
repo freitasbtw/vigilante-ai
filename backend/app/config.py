@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     FACE_SCALE_FACTOR: float = 1.1
     FACE_MIN_NEIGHBORS: int = 5
     FACE_MIN_SIZE: int = 48
+    API_KEY: str = ""
+    RATE_LIMIT_WINDOW_SECONDS: int = 60
+    RATE_LIMIT_MAX_REQUESTS: int = 30
 
     model_config = {"env_prefix": "VIGILANTE_"}
 
