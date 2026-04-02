@@ -24,18 +24,16 @@ _ALL_EPI_CLASSES: dict[int, str] = {
     5: "calcado_seguranca",
 }
 
-# MVP: face/head EPIs only
-MVP_EPI_KEYS = {"protecao_ocular", "capacete", "mascara"}
-
-EPI_CLASSES: dict[int, str] = {
-    k: v for k, v in _ALL_EPI_CLASSES.items() if v in MVP_EPI_KEYS
-}
+EPI_CLASSES: dict[int, str] = _ALL_EPI_CLASSES.copy()
 
 # Portuguese display labels for bounding box annotation
 EPI_LABELS_PT: dict[str, str] = {
+    "luvas": "Luvas",
+    "colete": "Colete",
     "protecao_ocular": "Protecao ocular",
     "capacete": "Capacete",
     "mascara": "Mascara",
+    "calcado_seguranca": "Calcado de seguranca",
 }
 
 FACE_CLASS_KEY = "rosto"
@@ -43,12 +41,15 @@ FACE_LABEL_PT = "Rosto"
 
 # Portuguese alert labels for missing EPI violations
 EPI_ALERT_LABELS: dict[str, str] = {
+    "luvas": "Luvas ausentes",
+    "colete": "Colete ausente",
     "protecao_ocular": "Protecao ocular ausente",
     "capacete": "Capacete ausente",
     "mascara": "Mascara ausente",
+    "calcado_seguranca": "Calcado de seguranca ausente",
 }
 
-GREEN = (100, 220, 100)
+GREEN = (0, 255, 0)
 LABEL_BG = (60, 160, 60)
 RED = (0, 0, 255)
 BLUE = (220, 140, 60)
@@ -179,9 +180,12 @@ class SafetyDetector:
             for i, epi_key in enumerate(sorted(missing_epis)):
                 cy = start_y + i * 35
                 cv2.circle(annotated, (circle_x, cy), 10, RED, -1)
-                label_text = EPI_LABELS_PT.get(epi_key, epi_key)
+                label_text = EPI_ALERT_LABELS.get(
+                    epi_key,
+                    f"{EPI_LABELS_PT.get(epi_key, epi_key)} ausente",
+                )
                 cv2.putText(
-                    annotated, f"{label_text} ausente",
+                    annotated, label_text,
                     (circle_x + 18, cy + 5),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.55, RED, 2,
                 )

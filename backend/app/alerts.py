@@ -33,6 +33,9 @@ class AlertManager:
         elapsed = (datetime.now() - last).total_seconds()
         return elapsed < settings.ALERT_COOLDOWN_SECONDS
 
+    def is_on_cooldown(self, violation_type: str) -> bool:
+        return self._is_on_cooldown(violation_type)
+
     @staticmethod
     def _encode_image(frame: NDArray[np.uint8], width: int) -> str:
         source_height, source_width = frame.shape[:2]

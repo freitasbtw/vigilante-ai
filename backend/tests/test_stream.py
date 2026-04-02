@@ -179,7 +179,7 @@ class TestEpiFilter:
         annotated_calls: list[list[Detection]] = []
         original_annotate = stream_processor._detector.annotate_frame
 
-        def tracking_annotate(frame, dets):  # type: ignore[no-untyped-def]
+        def tracking_annotate(frame, dets, missing_epis=None):  # type: ignore[no-untyped-def]
             annotated_calls.append(list(dets))
             return frame
 
@@ -210,7 +210,7 @@ class TestEpiFilter:
 
         annotated_calls: list[list[Detection]] = []
 
-        def tracking_annotate(frame, dets):  # type: ignore[no-untyped-def]
+        def tracking_annotate(frame, dets, missing_epis=None):  # type: ignore[no-untyped-def]
             annotated_calls.append(list(dets))
             return frame
 
@@ -236,7 +236,7 @@ class TestEpiFilter:
 
         annotated_calls: list[list[Detection]] = []
 
-        def tracking_annotate(frame, dets):  # type: ignore[no-untyped-def]
+        def tracking_annotate(frame, dets, missing_epis=None):  # type: ignore[no-untyped-def]
             annotated_calls.append(list(dets))
             return frame
 
@@ -273,7 +273,7 @@ class TestMissingEpiAlerts:
         ]
         stream_processor._detector.detect.return_value = detections  # type: ignore[attr-defined]
 
-        def passthrough_annotate(frame, dets):  # type: ignore[no-untyped-def]
+        def passthrough_annotate(frame, dets, missing_epis=None):  # type: ignore[no-untyped-def]
             return frame
 
         stream_processor._detector.annotate_frame = passthrough_annotate  # type: ignore[assignment]
@@ -300,7 +300,7 @@ class TestMissingEpiAlerts:
         ]
         stream_processor._detector.detect.return_value = detections  # type: ignore[attr-defined]
 
-        def passthrough_annotate(frame, dets):  # type: ignore[no-untyped-def]
+        def passthrough_annotate(frame, dets, missing_epis=None):  # type: ignore[no-untyped-def]
             return frame
 
         stream_processor._detector.annotate_frame = passthrough_annotate  # type: ignore[assignment]
@@ -323,7 +323,7 @@ class TestMissingEpiAlerts:
         # No detections at all
         stream_processor._detector.detect.return_value = []  # type: ignore[attr-defined]
 
-        def passthrough_annotate(frame, dets):  # type: ignore[no-untyped-def]
+        def passthrough_annotate(frame, dets, missing_epis=None):  # type: ignore[no-untyped-def]
             return frame
 
         stream_processor._detector.annotate_frame = passthrough_annotate  # type: ignore[assignment]

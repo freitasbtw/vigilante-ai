@@ -41,6 +41,19 @@ class StreamProcessor:
         self._epi_lock = threading.Lock()
         self._last_missing_set: frozenset[str] = frozenset()
 
+    @staticmethod
+    def _build_violation_type(missing_keys: set[str]) -> str:
+        if not missing_keys:
+            return "EPI ausente"
+        if len(missing_keys) == 1:
+            key = next(iter(missing_keys))
+            return EPI_ALERT_LABELS.get(
+                key,
+                f"{EPI_LABELS_PT.get(key, key)} ausente",
+            )
+        missing_labels = sorted(EPI_LABELS_PT.get(k, k) for k in missing_keys)
+        return f"{', '.join(missing_labels)} ausentes"
+
     @property
     def active_epis(self) -> set[str]:
         with self._epi_lock:
@@ -151,17 +164,16 @@ class StreamProcessor:
 
                 # Consolidated alert: one alert for all missing EPIs
                 current_missing = frozenset(missing_keys)
+                violation_type = self._build_violation_type(missing_keys)
                 if missing_keys and (
                     current_missing != self._last_missing_set
-                    or not self._alert_manager._is_on_cooldown("epi_violation")
+                    or not self._alert_manager.is_on_cooldown(violation_type)
                 ):
-                    missing_labels = sorted(EPI_LABELS_PT.get(k, k) for k in missing_keys)
-                    labels = ", ".join(missing_labels)
                     self._alert_manager.add_alert(
-                        f"{labels} ausente(s)",
+                        violation_type,
                         representative_confidence,
                         frame,
-                        missing_epis=missing_labels,
+                        missing_epis=sorted(EPI_LABELS_PT.get(k, k) for k in missing_keys),
                     )
                 self._last_missing_set = current_missing
                 is_compliant = len(missing_keys) == 0

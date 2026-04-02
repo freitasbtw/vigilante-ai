@@ -36,7 +36,7 @@ def mock_detector() -> SafetyDetector:
     type(detector).is_loaded = PropertyMock(return_value=True)
     detector.load_model.return_value = None
     detector.detect.return_value = []
-    detector.annotate_frame.side_effect = lambda frame, _dets: frame
+    detector.annotate_frame.side_effect = lambda frame, _dets, missing_epis=None: frame
 
     return detector
 
