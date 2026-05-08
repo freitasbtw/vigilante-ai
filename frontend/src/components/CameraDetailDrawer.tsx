@@ -52,9 +52,9 @@ export function CameraDetailDrawer({ camera, onClose }: CameraDetailDrawerProps)
           (meRes?.role ?? role) !== null &&
           REVIEWER_ROLES.includes((meRes?.role ?? role) as User["role"]);
         const [a, p, s, e, c] = await Promise.all([
-          listCameraAlerts(camera.id, 1, 20, "confirmed").catch(() => []),
+          listCameraAlerts(camera.id, 1, 100, "confirmed").catch(() => []),
           reviewer
-            ? listCameraAlerts(camera.id, 1, 20, "pending").catch(() => [])
+            ? listCameraAlerts(camera.id, 1, 100, "pending").catch(() => [])
             : Promise.resolve([]),
           getCameraStats(camera.id).catch(() => null),
           getCameraEPIConfig(camera.id).catch(() => null),
@@ -191,8 +191,8 @@ export function CameraDetailDrawer({ camera, onClose }: CameraDetailDrawerProps)
           {/* Body: feed center + side panel */}
           <div className="flex min-h-0 flex-1 overflow-hidden">
             {/* Feed area — centered with max-width, KPIs below */}
-            <div className="flex min-w-0 flex-1 flex-col">
-              <div className="flex flex-1 items-center justify-center bg-black p-3">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+              <div className="flex min-h-0 flex-1 items-center justify-center bg-black p-3">
                 {!camera?.is_running ? (
                   <div className="flex flex-col items-center gap-3 text-text-on-dark-muted">
                     <CameraOff size={48} strokeWidth={1.4} />

@@ -52,6 +52,24 @@ class AlertService:
         if self._is_on_cooldown(violation_type):
             return None
 
+        # Suppress duplicates while a reviewer hasn't yet decided on the prior
+        # alert for this (camera, violation_type). Otherwise the same persistent
+        # violation re-spawns every cooldown window and the pending queue
+        # never drains for the supervisor.
+        try:
+            with session_scope() as session:
+                if AlertRepository(session).has_unreviewed(
+                    self._camera_id, violation_type
+                ):
+                    with self._lock:
+                        self._cooldowns[violation_type] = datetime.utcnow()
+                    return None
+        except Exception:
+            logger.exception(
+                "has_unreviewed check failed for camera %s; falling through",
+                self._camera_id,
+            )
+
         alert_id = str(uuid4())
         quality = settings.ALERT_JPEG_QUALITY
         thumb_jpeg = _encode_jpeg(frame, width=160, quality=quality)

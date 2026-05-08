@@ -194,6 +194,17 @@ class AlertRepository:
         total = self._session.scalar(count_stmt) or 0
         return rows, int(total)
 
+    def has_unreviewed(self, camera_id: str, violation_type: str) -> bool:
+        """True iff there is at least one alert for (camera, violation_type) that
+        still has no feedback. Used to suppress duplicate notifications while a
+        reviewer hasn't decided on the previous one."""
+        stmt = select(Alert.id).where(
+            Alert.camera_id == camera_id,
+            Alert.violation_type == violation_type,
+            Alert.feedback.is_(None),
+        ).limit(1)
+        return self._session.scalar(stmt) is not None
+
     def delete_by_camera(self, camera_id: str) -> int:
         rows = self._session.scalars(
             select(Alert).where(Alert.camera_id == camera_id)
