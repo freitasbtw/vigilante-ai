@@ -1,20 +1,94 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vigilante
+      POSTGRES_PASSWORD: vigilante_dev
+      POSTGRES_DB: vigilante
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vigilante -d vigilante"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      network: host
     ports:
       - "8000:8000"
     environment:
       - VIGILANTE_CAMERA_INDEX=0
+      - VIGILANTE_DATABASE_URL=postgresql+psycopg2://vigilante:vigilante_dev@postgres:5432/vigilante
+      - VIGILANTE_BLOB_STORAGE_PATH=/data/alerts
+      - VIGILANTE_RETRAINING_EXPORT_PATH=/data/feedback
     group_add:
       - "44"  # video group for camera access
     devices:
       - /dev/video0:/dev/video0
+    volumes:
+      - alerts_data:/data/alerts
+      # Bind-mount so admin feedback exports show up directly under
+      # ml/data/feedback for the merge_feedback.sh helper.
+      - ./ml/data/feedback:/data/feedback
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      network: host
     ports:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
+
+  # ---- RTSP test stack (profile: rtsp) ----
+  # Sobe MediaMTX server + ffmpeg-loop que transmite MP4s da pasta ./media
+  # como streams RTSP, simulando câmeras IP reais.
+  #
+  # Subir só esse stack:
+  #   docker compose --profile rtsp up -d
+  # Subir tudo (app + RTSP):
+  #   docker compose --profile rtsp up -d
+  #
+  # Cada arquivo em ./media/<nome>.mp4 vira um stream rtsp://localhost:8554/<nome>
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    profiles: ["rtsp"]
+    restart: unless-stopped
+    ports:
+      - "8554:8554"   # RTSP
+      - "8888:8888"   # HLS (debug no browser: http://localhost:8888/<stream>/index.m3u8)
+      - "9997:9997"   # API REST (status)
+    volumes:
+      - ./mediamtx/mediamtx.yml:/mediamtx.yml:ro
+
+  ffmpeg-loop:
+    image: jrottenberg/ffmpeg:7-alpine
+    profiles: ["rtsp"]
+    restart: unless-stopped
+    depends_on:
+      - mediamtx
+    volumes:
+      - ./media:/media:ro
+      - ./scripts/ffmpeg-loop.sh:/loop.sh:ro
+    entrypoint: ["/bin/sh", "/loop.sh"]
+    environment:
+      - MEDIAMTX_HOST=mediamtx
+      - MEDIAMTX_PORT=8554
+      - MEDIA_DIR=/media
+      - SEEK_SECONDS=${SEEK_SECONDS:-0}
+      - ACTIVE_VIDEO=${ACTIVE_VIDEO:-}
+
+volumes:
+  postgres_data:
+  alerts_data:

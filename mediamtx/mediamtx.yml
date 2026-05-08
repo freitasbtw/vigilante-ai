@@ -1,0 +1,31 @@
+# MediaMTX config — minimal RTSP server for local testing.
+# Reference: https://github.com/bluenviron/mediamtx
+
+rtspAddress: :8554
+hlsAddress: :8888
+apiAddress: :9997
+api: yes
+
+# Local dev: anonymous publish + read + API. Production: configure auth.
+authInternalUsers:
+  - user: any
+    pass: ""
+    ips: []
+    permissions:
+      - action: publish
+      - action: read
+      - action: playback
+  - user: any
+    pass: ""
+    ips: []
+    permissions:
+      - action: api
+      - action: metrics
+      - action: pprof
+
+pathDefaults:
+  source: publisher
+
+paths:
+  # Accept any path name dynamically — ffmpeg-loop pushes one per MP4 file.
+  all_others:
