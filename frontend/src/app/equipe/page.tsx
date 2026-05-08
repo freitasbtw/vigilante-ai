@@ -1,15 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, BadgeCheck, GraduationCap, Users2 } from "lucide-react";
+import { ArrowLeft, GraduationCap, Users2 } from "lucide-react";
+import { MarketingShell } from "@/components/MarketingShell";
 
-const fiapLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/d/d4/Fiap-logo-novo.jpg";
+const FIAP_LOGO = "https://upload.wikimedia.org/wikipedia/commons/d/d4/Fiap-logo-novo.jpg";
 
-type TeamMember = {
-  name: string;
-  rm: string;
-};
-
-const teamMembers: TeamMember[] = [
+const TEAM = [
   { name: "Felipe Neves Cavalcanti", rm: "551619" },
   { name: "Mateus Vicente", rm: "550521" },
   { name: "Gabriel Da Silva Freitas", rm: "551195" },
@@ -19,65 +15,55 @@ const teamMembers: TeamMember[] = [
 
 export default function TeamPage() {
   return (
-    <div className="flex flex-col gap-10 pb-16 pt-4 sm:gap-12 sm:pt-8">
-      <section className="surface-card relative overflow-hidden p-8 sm:p-10 lg:p-12">
-        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl space-y-5">
-            <div className="flex items-center gap-4">
-              <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-white px-4 py-3 shadow-sm">
-                <Image
-                  src={fiapLogoUrl}
-                  alt="Logo da FIAP"
-                  width={120}
-                  height={40}
-                  className="h-8 w-auto object-contain"
-                />
-              </div>
-              <p className="eyebrow">Equipe</p>
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Time responsável pelo Vigilante.ai</h1>
-            <p className="text-base leading-8 text-[var(--muted)] sm:text-lg">
-              Alunos da FIAP, engajados e focados em desenvolver uma plataforma de monitoramento com visão computacional aplicada a seguranca operacional.
-            </p>
-          </div>
-
+    <MarketingShell>
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-7xl px-6 py-16 lg:py-20">
           <Link
             href="/"
-            className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--border-strong)] bg-white/80 px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:-translate-y-1 hover:border-[var(--accent-strong)]"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted transition hover:text-text"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar para inicio
+            <ArrowLeft size={14} strokeWidth={2.2} />
+            Voltar ao início
           </Link>
+
+          <div className="mt-8 flex items-center gap-4">
+            <div className="rounded-md border border-border bg-bg-elevated px-3 py-2">
+              <Image src={FIAP_LOGO} alt="Logo FIAP" width={96} height={32} className="h-7 w-auto object-contain" />
+            </div>
+            <span className="eyebrow">Equipe</span>
+          </div>
+
+          <h1 className="mt-6 text-balance text-4xl font-semibold leading-tight tracking-tight text-text sm:text-5xl">
+            Time responsável pelo Vigilante.AI.
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-muted sm:text-lg">
+            Alunos da FIAP responsáveis pela concepção, modelagem de negócio e desenvolvimento técnico da plataforma de
+            monitoramento com visão computacional aplicada à segurança operacional.
+          </p>
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {teamMembers.map((member) => (
-          <article key={member.rm} className="surface-card p-6 sm:p-7">
-            <div className="flex items-center justify-between gap-4">
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-blue-700">
-                <Users2 className="h-6 w-6" />
-              </span>
-              <span className="rounded-full border border-[var(--border)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent-strong)]">
-                RM {member.rm}
-              </span>
-            </div>
-
-            <h2 className="mt-6 text-2xl font-semibold tracking-tight">{member.name}</h2>
-
-            <div className="mt-5 space-y-3 text-sm text-[var(--muted-strong)]">
-              <div className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-white/70 px-4 py-3">
-                <GraduationCap className="h-4 w-4 shrink-0 text-[var(--accent-strong)]" />
-                <p>Aluno FIAP</p>
-              </div>
-              <div className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-white/70 px-4 py-3">
-                <BadgeCheck className="h-4 w-4 shrink-0 text-[var(--accent-strong)]" />
-                <p>Engajado e focado na evolução do projeto</p>
-              </div>
-            </div>
-          </article>
-        ))}
+      <section>
+        <div className="mx-auto max-w-7xl px-6 py-16 lg:py-20">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {TEAM.map(({ name, rm }) => (
+              <article key={rm} className="card card-hover p-6">
+                <div className="flex items-center justify-between">
+                  <span className="grid h-10 w-10 place-items-center rounded-md bg-bg-sunken text-text">
+                    <Users2 size={18} strokeWidth={1.8} />
+                  </span>
+                  <span className="badge badge-neutral mono-num">RM {rm}</span>
+                </div>
+                <h2 className="mt-5 text-lg font-semibold tracking-tight text-text">{name}</h2>
+                <div className="mt-4 flex items-center gap-2 text-sm text-text-muted">
+                  <GraduationCap size={14} strokeWidth={1.8} />
+                  <span>Aluno FIAP — Startup One</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
-    </div>
+    </MarketingShell>
   );
 }

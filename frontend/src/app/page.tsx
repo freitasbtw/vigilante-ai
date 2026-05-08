@@ -1,5 +1,3 @@
-"use client";
-
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import {
@@ -9,17 +7,19 @@ import {
   Gauge,
   ShieldAlert,
   ShieldCheck,
-  type LucideIcon,
+  Square,
   Video,
+  type LucideIcon,
 } from "lucide-react";
 
+import { MarketingShell } from "@/components/MarketingShell";
 import dashboardImage from "../assets/Nano_Banana_2_Premium_3D_isometric_render_of_a_sleek__bezel_less_computer_monitor_floating_in_a_dark_4.png";
 import ppeImage from "../assets/Nano_Banana_2_Cinematic_wide_shot_of_a_modern_industrial_construction_site_at_dusk__volumetric_light_2.png";
 import performanceImage from "../assets/Nano_Banana_2_Macro_photography_of_a_futuristic_CPU_chip_mounted_on_a_sleek_dark_circuit_board__Neon_2.png";
 import heroImage from "../assets/Nano_Banana_2_Extreme_close_up_portrait_of_a_factory_worker_s_face_and_shoulders__wearing_a_yellow_h_1.png";
 import smartLogicImage from "../assets/Nano_Banana_2_A_split_screen_composition_illustrating_a_safety_monitoring_comparison__Left_side__A_w_1.png";
 
-type ShowcaseSection = {
+type Showcase = {
   eyebrow: string;
   title: string;
   description: string;
@@ -28,241 +28,234 @@ type ShowcaseSection = {
   alt: string;
   icon: LucideIcon;
   reverse?: boolean;
-  gradient: string;
 };
 
-const showcaseSections: ShowcaseSection[] = [
+const SHOWCASES: Showcase[] = [
   {
-    eyebrow: "PPE Detection",
-    title: "Reconhecimento de EPIs com contexto de campo",
+    eyebrow: "Detecção de EPI",
+    title: "Reconhecimento focado no operador em campo",
     description:
-      "A leitura visual identifica capacete, colete e outros itens obrigatórios diretamente sobre o operador, reduzindo zonas cinzentas e acelerando a resposta da equipe de segurança.",
+      "A leitura visual identifica capacete e colete diretamente sobre o trabalhador, reduzindo zonas cinzentas e acelerando a resposta da equipe de segurança.",
     highlights: [
-      "Detecção focada no colaborador em primeiro plano",
-      "Apoio para configuração dinâmica por área operacional",
-      "Sinalização imediata de ausência de proteção obrigatória",
+      "Detecção sobre o operador, não sobre o ambiente",
+      "Configuração por área operacional",
+      "Sinalização imediata da ausência do EPI",
     ],
     image: ppeImage,
-    alt: "Operador industrial usando equipamentos de proteção individual em ambiente de fábrica.",
+    alt: "Operador industrial usando EPI em ambiente de fábrica.",
     icon: ShieldCheck,
-    gradient: "from-stone-100 via-white to-amber-50",
   },
   {
-    eyebrow: "Smart Logic",
-    title: "Comparação visual que separa conformidade de risco",
+    eyebrow: "Lógica de Compliance",
+    title: "Separa conformidade real de risco real",
     description:
-      "A camada de lógica combina detecção, regras de negócio e contexto da cena para distinguir um operador conforme de uma situação que exige alerta imediato.",
+      "A camada de regras combina detecção e contexto da cena para distinguir um operador conforme de uma situação que exige alerta imediato.",
     highlights: [
       "Leitura de múltiplos objetos na mesma cena",
       "Regras orientadas por tipo de operação",
-      "Menos ruido operacional e mais prioridade real",
+      "Menos ruído, mais prioridade real",
     ],
     image: smartLogicImage,
-    alt: "Comparação visual entre uma cena segura e outra com potencial violação de segurança.",
+    alt: "Comparação entre cena segura e cena com violação.",
     icon: BrainCircuit,
     reverse: true,
-    gradient: "from-slate-100 via-white to-stone-50",
   },
   {
     eyebrow: "Dashboard",
     title: "Visão executiva clara para acompanhar conformidade",
     description:
-      "O dashboard consolida volume de violações, histórico da sessão e indicadores de adesão para que supervisão e gestão enxerguem tendência, risco e oportunidade de ajuste.",
+      "Volume de violações, histórico de sessão e indicadores de adesão consolidados para que supervisão e gestão enxerguem tendência, risco e oportunidade de ajuste.",
     highlights: [
-      "Leitura rápida de métricas críticas",
-      "Histórico de eventos para auditoria e análise",
+      "Métricas críticas em leitura rápida",
+      "Histórico para auditoria e análise",
       "Base visual consistente entre operação e gestão",
     ],
     image: dashboardImage,
-    alt: "Renderizacao de monitor exibindo a interface de um painel de acompanhamento.",
+    alt: "Renderização de monitor exibindo a interface do painel de acompanhamento.",
     icon: BarChart3,
-    gradient: "from-stone-100 via-white to-slate-50",
   },
   {
     eyebrow: "Performance",
     title: "Inferência otimizada para operar em tempo real",
     description:
-      "A arquitetura foi pensada para manter resposta baixa e processamento contínuo, sustentando monitoramento ao vivo sem transformar a segurança em um gargalo operacional.",
+      "A arquitetura mantém resposta baixa e processamento contínuo, sustentando monitoramento ao vivo sem transformar a segurança em gargalo operacional.",
     highlights: [
       "Pipeline pronto para baixa latência",
-      "Capacidade de sustentar análise contínua",
-      "Base técnica preparada para evolução de modelos",
+      "Análise contínua sustentável",
+      "Base técnica preparada para evolução do modelo",
     ],
     image: performanceImage,
-    alt: "Chip de processamento em close representando alta performance computacional.",
+    alt: "Chip de processamento em close-up.",
     icon: Gauge,
     reverse: true,
-    gradient: "from-stone-200 via-white to-slate-50",
+  },
+];
+
+const FEATURES = [
+  {
+    icon: Video,
+    title: "Monitoramento em tempo real",
+    description:
+      "Processamento de feeds RTSP simultâneos para acompanhar operadores e equipamentos sem depender de observação manual contínua.",
+  },
+  {
+    icon: ShieldAlert,
+    title: "Alertas críticos priorizados",
+    description:
+      "Incidentes de conformidade ganham prioridade visual imediata para reduzir tempo de reação e aumentar rastreabilidade da ocorrência.",
+  },
+  {
+    icon: BarChart3,
+    title: "Análise de dados consolidada",
+    description:
+      "Histórico, agregação e leitura executiva para orientar ajustes operacionais com base em dado, não em intuição.",
   },
 ];
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col gap-16 pb-20 sm:gap-20">
-      <section className="relative overflow-hidden pt-6 sm:pt-10">
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="relative space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white/70 px-4 py-2 backdrop-blur-xl">
-              <ShieldCheck className="h-4 w-4 text-[var(--accent-strong)]" />
-              <span className="eyebrow !text-[10px]">Segurança industrial de próxima geração</span>
+    <MarketingShell>
+      {/* Hero */}
+      <section className="relative border-b border-border">
+        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-28">
+          <div className="space-y-8">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-elevated px-3 py-1.5">
+              <span className="grid h-3.5 w-3.5 place-items-center">
+                <Square size={10} strokeWidth={2.4} className="text-text" />
+              </span>
+              <span className="text-xs font-medium tracking-wide text-text-muted">
+                Visão computacional para segurança industrial
+              </span>
             </div>
 
-            <div className="space-y-5">
-              <h1 className="max-w-4xl text-5xl font-bold tracking-tight text-[var(--foreground)] sm:text-6xl lg:text-7xl">
-                Vigilância Inteligente
-                <br />
-                <span className="text-[var(--accent-strong)]">para sua Operação</span>
-              </h1>
+            <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight text-text sm:text-6xl">
+              Vigilância inteligente para sua operação.
+            </h1>
 
-              <p className="max-w-2xl text-lg leading-8 text-[var(--muted)]">
-                O Vigilante.ai combina visão computacional, regras operacionais e análise em tempo real para detectar ausência de EPIs e transformar incidentes potenciais em ação imediata.
-              </p>
-            </div>
+            <p className="max-w-xl text-lg leading-relaxed text-text-muted">
+              O Vigilante.AI combina visão computacional, regras operacionais e análise em tempo real para detectar
+              ausência de EPIs e transformar incidentes potenciais em ação imediata.
+            </p>
 
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="/monitor"
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--accent-strong)] px-8 py-4 text-sm font-semibold text-white shadow-[0_20px_50px_-20px_rgba(30,64,175,0.6)] transition hover:-translate-y-1 hover:bg-[var(--accent)]"
-              >
-                Acessar Monitor
-                <ArrowRight className="h-4 w-4" />
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/login" className="btn-primary px-6 py-3 text-sm">
+                Acessar plataforma
+                <ArrowRight size={16} strokeWidth={2.2} />
               </Link>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-white/80 px-8 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:-translate-y-1 hover:border-[var(--accent-strong)]"
-              >
-                Ver Dashboard
+              <Link href="/equipe" className="btn-secondary px-6 py-3 text-sm">
+                Conhecer a equipe
               </Link>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="surface-card p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">Cobertura</p>
-                <p className="mt-3 text-2xl font-semibold">EPIs críticos</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Capacete, colete e regras adaptáveis por operação.</p>
-              </div>
-              <div className="surface-card p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">Resposta</p>
-                <p className="mt-3 text-2xl font-semibold">Alerta imediato</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Sinal visual para agir no exato momento da violação.</p>
-              </div>
-              <div className="surface-card p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">Leitura</p>
-                <p className="mt-3 text-2xl font-semibold">Visão consolidada</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Monitor e dashboard conectados na mesma narrativa operacional.</p>
-              </div>
-            </div>
+            <dl className="grid gap-6 border-t border-border pt-8 sm:grid-cols-3">
+              {[
+                ["Cobertura", "EPIs críticos", "Capacete e colete refletivo, regras adaptáveis."],
+                ["Resposta", "Alerta imediato", "Sinal visual no exato momento da violação."],
+                ["Leitura", "Visão consolidada", "Monitor e dashboard na mesma narrativa."],
+              ].map(([eyebrow, title, desc]) => (
+                <div key={eyebrow}>
+                  <dt className="eyebrow">{eyebrow}</dt>
+                  <dd className="mt-2">
+                    <div className="text-base font-semibold text-text">{title}</div>
+                    <div className="mt-1 text-sm leading-relaxed text-text-muted">{desc}</div>
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
-          <div className="surface-card relative overflow-hidden p-3 sm:p-4">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-stone-200/50" />
-            <div className="relative aspect-[5/4] overflow-hidden rounded-[24px] border border-white/60">
-              <Image
-                src={heroImage}
-                alt="Vista ampla de um canteiro industrial moderno ao entardecer."
-                fill
-                priority
-                className="object-cover"
-                sizes="(min-width: 1024px) 42vw, 100vw"
-              />
-            </div>
+          <div className="relative aspect-[5/4] overflow-hidden rounded-xl border border-border shadow-lg">
+            <Image
+              src={heroImage}
+              alt="Operador industrial usando capacete amarelo em close."
+              fill
+              priority
+              className="object-cover"
+              sizes="(min-width: 1024px) 42vw, 100vw"
+            />
           </div>
         </div>
       </section>
 
-      <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="surface-card p-8 space-y-4">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50">
-            <Video className="h-6 w-6 text-blue-600" />
+      {/* Features */}
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="mb-12 max-w-2xl">
+            <p className="eyebrow">Plataforma</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-text sm:text-4xl">
+              Três pilares para fechar o ciclo da segurança.
+            </h2>
           </div>
-          <h3 className="text-xl font-bold">Monitoramento RT</h3>
-          <p className="text-sm leading-relaxed text-[var(--muted)]">
-            Processamento de feed em tempo real para acompanhar operadores, equipamentos e contexto sem depender de observação manual contínua.
-          </p>
-        </div>
-
-        <div className="surface-card p-8 space-y-4">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-100 bg-rose-50">
-            <ShieldAlert className="h-6 w-6 text-rose-600" />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map(({ icon: Icon, title, description }) => (
+              <div key={title} className="card card-hover p-6">
+                <div className="grid h-10 w-10 place-items-center rounded-md bg-bg-sunken text-text">
+                  <Icon size={20} strokeWidth={1.8} />
+                </div>
+                <h3 className="mt-5 text-lg font-semibold text-text">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-muted">{description}</p>
+              </div>
+            ))}
           </div>
-          <h3 className="text-xl font-bold">Alertas Críticos</h3>
-          <p className="text-sm leading-relaxed text-[var(--muted)]">
-            Incidentes de conformidade ganham prioridade visual imediata para reduzir tempo de reação e aumentar rastreabilidade da ocorrência.
-          </p>
-        </div>
-
-        <div className="surface-card p-8 space-y-4 sm:col-span-2 lg:col-span-1">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50">
-            <BarChart3 className="h-6 w-6 text-slate-700" />
-          </div>
-          <h3 className="text-xl font-bold">Análise de Dados</h3>
-          <p className="text-sm leading-relaxed text-[var(--muted)]">
-            Histórico, consolidação e leitura executiva para orientar ajustes operacionais com mais base e menos intuição.
-          </p>
         </div>
       </section>
 
-      {showcaseSections.map(({ eyebrow, title, description, highlights, image, alt, icon: Icon, reverse, gradient }) => (
-        <section key={eyebrow} className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <div className={reverse ? "order-1 lg:order-2" : "order-1"}>
-            <div className="surface-card p-8 sm:p-10">
-              <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white/80 px-4 py-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-700">
-                  <Icon className="h-4 w-4" />
+      {/* Showcases */}
+      {SHOWCASES.map(({ eyebrow, title, description, highlights, image, alt, icon: Icon, reverse }) => (
+        <section key={eyebrow} className="border-b border-border">
+          <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center">
+            <div className={reverse ? "lg:order-2" : ""}>
+              <div className="inline-flex items-center gap-2.5">
+                <span className="grid h-8 w-8 place-items-center rounded-md bg-bg-sunken text-text">
+                  <Icon size={16} strokeWidth={1.8} />
                 </span>
-                <span className="eyebrow !text-[10px]">{eyebrow}</span>
+                <span className="eyebrow">{eyebrow}</span>
               </div>
-
-              <h2 className="mt-6 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg">{description}</p>
-
-              <div className="mt-6 grid gap-3">
-                {highlights.map((highlight) => (
-                  <div key={highlight} className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-white/70 px-4 py-3">
-                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-strong)]" />
-                    <p className="text-sm leading-6 text-[var(--muted-strong)]">{highlight}</p>
-                  </div>
+              <h2 className="mt-5 max-w-xl text-3xl font-semibold tracking-tight text-text sm:text-4xl">
+                {title}
+              </h2>
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-text-muted">{description}</p>
+              <ul className="mt-6 space-y-3">
+                {highlights.map((h) => (
+                  <li key={h} className="flex items-start gap-2.5">
+                    <span className="mt-[6px] h-1 w-1 shrink-0 rounded-full bg-text" />
+                    <span className="text-sm leading-relaxed text-text-muted">{h}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
-          </div>
-
-          <div className={reverse ? "order-2 lg:order-1" : "order-2"}>
-            <div className="surface-card relative overflow-hidden p-3 sm:p-4">
-              <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-              <div className="relative aspect-[16/10] overflow-hidden rounded-[24px] border border-white/60">
-                <Image
-                  src={image}
-                  alt={alt}
-                  fill
-                  className="object-cover"
-                  sizes="(min-width: 1024px) 42vw, 100vw"
-                />
+            <div className={reverse ? "lg:order-1" : ""}>
+              <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border shadow-md">
+                <Image src={image} alt={alt} fill className="object-cover" sizes="(min-width: 1024px) 42vw, 100vw" />
               </div>
             </div>
           </div>
         </section>
       ))}
 
-      <section className="surface-card relative overflow-hidden p-8 sm:p-10 lg:p-12">
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl space-y-4">
-            <p className="eyebrow">Equipe</p>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Conheça quem construiu o Vigilante.ai</h2>
-            <p className="text-base leading-7 text-[var(--muted)] sm:text-lg">
-              A equipe do projeto agora tem uma página dedicada, com os integrantes responsáveis pela concepção, produto e execução técnica da plataforma.
-            </p>
+      {/* Equipe CTA */}
+      <section>
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="card overflow-hidden">
+            <div className="grid gap-8 p-10 sm:grid-cols-[1.4fr_0.6fr] sm:items-end lg:p-12">
+              <div className="space-y-4">
+                <p className="eyebrow">Equipe</p>
+                <h2 className="text-3xl font-semibold tracking-tight text-text sm:text-4xl">
+                  Conheça quem construiu o Vigilante.AI.
+                </h2>
+                <p className="max-w-2xl text-base leading-relaxed text-text-muted">
+                  A equipe responsável pela concepção, produto e execução técnica da plataforma tem uma página dedicada
+                  com integrantes, papéis e contexto.
+                </p>
+              </div>
+              <Link href="/equipe" className="btn-primary justify-self-start px-6 py-3 text-sm sm:justify-self-end">
+                Ver equipe
+                <ArrowRight size={16} strokeWidth={2.2} />
+              </Link>
+            </div>
           </div>
-
-          <Link
-            href="/equipe"
-            className="inline-flex w-fit items-center gap-2 rounded-full bg-[var(--accent-strong)] px-6 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_-20px_rgba(30,64,175,0.6)] transition hover:-translate-y-1 hover:bg-[var(--accent)]"
-          >
-            Ver equipe completa
-            <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </section>
-    </div>
+    </MarketingShell>
   );
 }
