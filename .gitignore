@@ -56,4 +56,5 @@ docs/
 
 # Ralph + ad-hoc tasks
 scripts/ralph
+scripts/.rtsp_state
 tasks
