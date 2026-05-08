@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.so
+*.pyc
 .venv/
 venv/
 env/
@@ -9,9 +10,17 @@ env/
 dist/
 build/
 
-# YOLO model weights
+# Pretrained YOLO base weights (auto-downloaded by Ultralytics; production model is backend/best.pt)
+/yolo*.pt
+/yolo*.onnx
 backend/models/*.pt
 backend/models/*.onnx
+
+# Backend runtime artifacts
+backend/data/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/migrations/versions/__pycache__/
 
 # Node / Next.js
 node_modules/
@@ -35,9 +44,16 @@ Thumbs.db
 
 # Logs
 *.log
-.venv/
-__pycache__/
-*.pyc
 
+# Code review graph (per-clone cache)
+.code-review-graph/
+
+# Editor / agent caches
+.claude/
+
+# FIAP entregaveis (school deliverables, not project docs)
+docs/
+
+# Ralph + ad-hoc tasks
 scripts/ralph
 tasks
