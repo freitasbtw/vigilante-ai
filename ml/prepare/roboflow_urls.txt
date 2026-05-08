@@ -1,0 +1,28 @@
+# Roboflow Universe — top picks PPE construction MVP (helmet + vest only).
+# Run:
+#   export ROBOFLOW_API_KEY=<your-key>
+#   python -m ml.prepare.roboflow_fetch --from-file ml/prepare/roboflow_urls.txt
+#
+# Combined PPE model — gold tier, 44k imgs, curado Roboflow oficial
+https://universe.roboflow.com/roboflow-universe-projects/personal-protective-equipment-combined-model
+
+# Safety Vests dedicado — balanceia vest (sempre sub-representado nos hardhat-only)
+https://universe.roboflow.com/roboflow-universe-projects/safety-vests
+
+# Hard Hats grande — 19.7k imgs, curado oficial
+https://universe.roboflow.com/roboflow-universe-projects/hard-hats-fhbh5
+
+# Hard Hat Universe — 7k imgs, diversifica (dedupe corta sobreposição com Hard Hats)
+https://universe.roboflow.com/universe-datasets/hard-hat-universe-0dy7t
+
+# === Vest-focused datasets — balanceia helmet:vest (era 97:3) ===
+
+# vest dataset 1 (~2-3k)
+https://universe.roboflow.com/aa-sufbf/vest-qf3av
+
+# vest dataset 2 — heavy augmented (~9k mas pode ter cópias sintéticas, dedupe ajuda)
+# DESATIVADO: travou no Roboflow export (85%). Re-ativa removendo o # se quiser tentar.
+# https://universe.roboflow.com/azimjaan21/new_vest_data_aug
+
+# vest dataset 3 (~2-3k)
+https://universe.roboflow.com/oakdev/vest-pbrbu

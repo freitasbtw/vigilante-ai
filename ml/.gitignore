@@ -1,0 +1,7 @@
+datasets/
+runs/
+*.pt
+*.onnx
+*.engine
+__pycache__/
+.cache/

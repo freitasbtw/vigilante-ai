@@ -1,0 +1,13 @@
+# YOLOv8 data config — 2-class PPE schema (canteiro: helmet + vest only).
+# Class indices match the runtime model (backend/app/detector.py::_ALL_EPI_CLASSES).
+
+path: ../datasets/merged
+train: images/train
+val: images/val
+test: images/test
+
+# Class indices MUST match the runtime mapping in backend/app/detector.py
+# so the trained weights drop in without remapping.
+names:
+  0: helmet
+  1: vest
