@@ -46,9 +46,11 @@ function LoginForm() {
       <header className="flex h-16 items-center justify-between border-b border-border bg-bg-elevated px-6">
         <Link
           href="/"
-          className="text-[18px] font-semibold tracking-tight text-text"
+          className="inline-flex items-center gap-2 text-[18px] font-semibold tracking-tight text-text"
         >
-          Vigilante<span className="text-text-muted">.AI</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-black.webp" alt="Vigilante.AI" width={28} height={29} className="block" />
+          <span>Vigilante<span style={{ color: "#f5a623" }}>.AI</span></span>
         </Link>
         <Link
           href="/"

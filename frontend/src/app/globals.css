@@ -72,6 +72,7 @@
 
 html {
   font-family:
+    var(--font-geist-sans),
     system-ui, -apple-system, "Segoe UI Variable", "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
@@ -272,7 +273,7 @@ body {
     text-wrap: balance;
   }
   .mono-num {
-    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono",
+    font-family: var(--font-geist-mono), ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono",
       Menlo, Monaco, Consolas, monospace;
     font-variant-numeric: tabular-nums;
   }

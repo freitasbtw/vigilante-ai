@@ -33,8 +33,10 @@ export function Sidebar() {
     <aside className="flex h-screen w-64 shrink-0 flex-col bg-bg-sidebar text-text-on-dark">
       {/* Brand */}
       <div className="flex h-16 items-center border-b border-border-on-dark px-6">
-        <span className="text-[17px] font-semibold tracking-tight text-text-on-dark">
-          Vigilante<span className="text-text-on-dark-muted">.AI</span>
+        <span className="inline-flex items-center gap-2 text-[17px] font-semibold tracking-tight text-text-on-dark">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-white.webp" alt="Vigilante.AI" width={26} height={27} className="block" />
+          <span>Vigilante<span style={{ color: "#f5a623" }}>.AI</span></span>
         </span>
       </div>
 

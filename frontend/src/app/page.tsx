@@ -142,9 +142,6 @@ export default function LandingPage() {
                 Acessar plataforma
                 <ArrowRight size={16} strokeWidth={2.2} />
               </Link>
-              <Link href="/equipe" className="btn-secondary px-6 py-3 text-sm">
-                Conhecer a equipe
-              </Link>
             </div>
 
             <dl className="grid gap-6 border-t border-border pt-8 sm:grid-cols-3">
@@ -233,29 +230,6 @@ export default function LandingPage() {
         </section>
       ))}
 
-      {/* Equipe CTA */}
-      <section>
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <div className="card overflow-hidden">
-            <div className="grid gap-8 p-10 sm:grid-cols-[1.4fr_0.6fr] sm:items-end lg:p-12">
-              <div className="space-y-4">
-                <p className="eyebrow">Equipe</p>
-                <h2 className="text-3xl font-semibold tracking-tight text-text sm:text-4xl">
-                  Conheça quem construiu o Vigilante.AI.
-                </h2>
-                <p className="max-w-2xl text-base leading-relaxed text-text-muted">
-                  A equipe responsável pela concepção, produto e execução técnica da plataforma tem uma página dedicada
-                  com integrantes, papéis e contexto.
-                </p>
-              </div>
-              <Link href="/equipe" className="btn-primary justify-self-start px-6 py-3 text-sm sm:justify-self-end">
-                Ver equipe
-                <ArrowRight size={16} strokeWidth={2.2} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
     </MarketingShell>
   );
 }

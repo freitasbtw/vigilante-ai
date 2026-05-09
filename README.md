@@ -5,6 +5,8 @@ Detecta capacete, colete e ausência de equipamento de proteção em qualquer st
 ou webcam local, expõe violações em um painel multi-tenant e realimenta alertas
 revisados em um loop de retreinamento.
 
+**Modelo treinado**: [`badmuriss/ppe-detection-yolov8s`](https://huggingface.co/badmuriss/ppe-detection-yolov8s) no Hugging Face — YOLOv8s fine-tunado especificamente para o Vigilante.AI sobre 6 datasets PPE públicos consolidados, com mAP@0.5 = 0.944.
+
 ## Arquitetura
 
 ```
@@ -182,6 +184,24 @@ Config por câmera (lista de EPIs, cores) fica em `/api/cameras/{id}/config/...`
 | `/relatorios` | KPIs de compliance e gráficos |
 | `/configuracoes` | Perfil do usuário e tenant |
 | `/equipe` | Página da equipe |
+
+## Modelo (Hugging Face)
+
+O detector YOLOv8s usado em produção foi treinado do zero para este projeto e está publicado
+em [huggingface.co/badmuriss/ppe-detection-yolov8s](https://huggingface.co/badmuriss/ppe-detection-yolov8s).
+
+| Métrica | Valor |
+|---|---|
+| Precision | 0.9253 |
+| Recall | 0.8924 |
+| mAP@0.5 | 0.9441 |
+| mAP@0.5:0.95 | 0.6596 |
+
+Treino: 50 epochs, yolov8s.pt como base, imgsz=640, batch=16, em dataset merged de 6 fontes
+públicas Roboflow filtradas para `helmet` e `vest`, com oversampling de vest para corrigir
+desbalanceamento (~5:1) e augmentations Albumentations para robustez a ângulos de CCTV.
+
+Pipeline completo (datasets, augment, train, eval, upload) em [`ml/`](./ml/README.md).
 
 ## Subprojetos
 
